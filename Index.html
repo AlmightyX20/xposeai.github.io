@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <!-- SEO Meta Tags -->
+    <meta
+      name="description"
+      content="XposeAI - Detect image tampering using deep learning. Upload an image to uncover hidden edits and ensure authenticity."
+    />
+    <meta
+      name="keywords"
+      content="image forensics, deep learning, fake detection, digital forensics, XposeAI"
+    />
+    <meta name="author" content="XposeAI Team" />
+
+    <title>XposeAI - Uncover the Truth Behind Every Image</title>
+    <style>
+      .container {
+        text-align: center;
+        background: rgba(255, 255, 255, 0.2); /* Transparent white */
+        backdrop-filter: blur(10px); /* Blur effect */
+        -webkit-backdrop-filter: blur(10px); /* Safari support */
+        padding: 3rem;
+        border-radius: 8px;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+      }
+
+      h1 {
+        margin-bottom: 1rem;
+      }
+      #upload-btn {
+        background-color: #45bbd6;
+        border: none;
+        color: white;
+        padding: 15px 32px;
+        cursor: pointer;
+        border-radius: 4px;
+      }
+      #result {
+        color: initial;
+        margin-top: 1rem;
+        font-weight: bold;
+      }
+      .image-container {
+        display: flex;
+        justify-content: center;
+        gap: 20px;
+        margin-top: 1rem;
+      }
+      .image-container img {
+        max-width: 300px;
+        max-height: 300px;
+        display: none;
+        border-radius: 5px;
+        border: 1px solid #ddd;
+        padding: 5px;
+      }
+      .loader {
+        display: none;
+        margin: 1rem auto;
+        border: 5px solid #f3f3f3;
+        border-top: 5px solid #3498db;
+        border-radius: 50%;
+        width: 40px;
+        height: 40px;
+        animation: spin 1s linear infinite;
+      }
+      @keyframes spin {
+        0% {
+          transform: rotate(0deg);
+        }
+        100% {
+          transform: rotate(360deg);
+        }
+      }
+
+      #explanation {
+        color: white !important; /* Ensure the text is always white */
+        text-align: justify;
+      }
+
+      #download-btn {
+        display: none; /* Initially hidden */
+        background-color: #007bff; /* Bootstrap Primary Blue */
+        color: white;
+        border: none;
+        padding: 12px 24px;
+        font-size: 16px;
+        font-weight: bold;
+        border-radius: 5px;
+        cursor: pointer;
+        transition: all 0.3s ease-in-out;
+        margin-top: 15px;
+
+        /* Center the button */
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        margin: 20px auto; /* Centers horizontally */
+      }
+
+      #download-btn:hover {
+        background-color: #0056b3; /* Darker blue on hover */
+      }
+
+      #download-btn:active {
+        transform: scale(0.98); /* Click effect */
+      }
+    </style>
+    <link
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="Home.css" />
+  </head>
+  <body class="original-theme">
+    <div class="stars"></div>
+    <div class="particles"></div>
+
+    <nav class="navbar">
+      <a href="/" class="logo">
+        <img src="XposeAILogo.png" alt="" />
+        Xpose<span class="ai">AI</span>
+      </a>
+      <div class="nav-links">
+        <a href="Home.html">Home</a>
+        <a href="Contact_rating.html">Contact</a>
+        <a href="About US.html">About Us</a>
+      </div>
+      <div class="settings-icon" onclick="openModal()">
+        <i class="fas fa-cog"></i>
+      </div>
+    </nav>
+
+    <main>
+      <section class="upload-section">
+        <h1>Uncover the Truth Behind Every Image</h1>
+        <p>Upload an Image to Reveal Hidden Edits and Ensure Authenticity</p>
+        <div class="container">
+          <input type="file" id="file-input" accept="image/*" hidden />
+          <button id="upload-btn">Upload and Scan Image</button>
+          <div id="result"></div>
+          <div id="explanation" class="explanation"></div>
+          <div class="loader" id="loader"></div>
+          <div class="image-container">
+            <div>
+              <p>Original Image:</p>
+              <img id="preview" alt="Original Uploaded Image" />
+            </div>
+            <div>
+              <p>SHAP Analysis:</p>
+              <img id="highlighted-image" alt="Highlighted Tampered Image" />
+            </div>
+          </div>
+          
+          <!-- ✅ SHAP Heatmap Legend -->
+          <div class="legend-container" id="legend-container" style="display: none;">
+            <p>SHAP Heatmap Legend:</p>
+            <img id="legend-image" alt="SHAP Legend">
+          </div>
+
+          <!-- ✅ Download Button (Hidden Initially) -->
+          <button id="download-btn" style="display: none">
+            Download Results
+          </button>
+        </div>
+
+        <!-- Modal -->
+        <div id="settingsModal" class="modal">
+          <div class="modal-content">
+            <span class="close-button" onclick="closeModal()">&times;</span>
+            <h2 id="settingsTitle">Settings</h2>
+
+            <div class="language-selection">
+              <h3 id="languageTitle">Language</h3>
+              <select id="languageDropdown">
+                <option value="en">English</option>
+                <option value="tl">Tagalog</option>
+                <option value="es">Español</option>
+                <option value="de">Deutsch</option>
+                <option value="ja">日本語</option>
+                <option value="ko">한국어</option>
+              </select>
+            </div>
+
+            <div class="instructions">
+              <h3 id="instructionsTitle">Instructions</h3>
+              <ol id="instructionsList" class="instructions-list">
+                <li>Choose your preferred theme from the options below.</li>
+                <li>Select your preferred language from the dropdown menu.</li>
+                <li>Use the scan button to analyze uploaded images.</li>
+                <li>
+                  Wait for the analysis to complete before viewing results.
+                </li>
+                <li>
+                  Check the confidence score to determine image authenticity.
+                </li>
+                <li>Contact support if you encounter any technical issues.</li>
+              </ol>
+            </div>
+
+            <div class="theme-selection">
+              <h3 id="themeTitle">Choose Theme</h3>
+              <button onclick="setTheme('dark')">Dark</button>
+              <button onclick="setTheme('light')">Light</button>
+              <button onclick="setTheme('original')">Original</button>
+            </div>
+
+            <div class="featured-section">
+              <h3 id="featuredTitle">Featured</h3>
+              <div class="featured-content">
+                <p id="featuredContent">
+                  Check out our latest features and updates!
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <script src="Home.js" defer></script>
+  </body>
+</html>
